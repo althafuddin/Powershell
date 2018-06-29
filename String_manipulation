@@ -1,0 +1,80 @@
+$items = Get-ChildItem <#path>
+$items.Count
+
+foreach ($i in $items){
+$volume = Get-Content $i
+$tvolume = $volume | ConvertTo-Json
+$tv =$tvolume | ConvertFrom-Json
+foreach($i in $tv.value)
+{
+        if ($i -like 'variable "role" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $roledefault = $tv.value[$index+2]
+           $role = $roledefault.Trim('default =').trim('"')                    
+         }
+
+        if ($i -like 'variable "volume_type" {')
+         {
+            $index = $tv.value.IndexOf($i)
+            $volumedefault = $tv.value[$index-1]
+            $volume = $volumedefault.Trim('## ').trim('vol')
+         }
+        
+        if ($i -like 'variable "volume_size" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $volumesizedefault = $tv.value[$index+2]
+           $volumesize = $volumesizedefault.Trim('default =').trim('"') 
+             
+        }
+    
+          if ($i -like 'variable "ebs_opt_volume_type" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebsvoldefault = $tv.value[$index-1]
+           $ebsvol = $ebsvoldefault.trim('##').trim('vol <- i guess')
+        }
+        
+        if ($i -like 'variable "ebs_opt_volume_size" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebssizedefault = $tv.value[$index+2]
+           $ebssize = $ebssizedefault.Trim('default =').trim('"')
+        }
+
+         if ($i -like 'variable "ebs_srv_volume_type" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebssrvvoldefault = $tv.value[$index-1]
+           $ebssrvvol = $ebssrvvoldefault.trim('##').trim('<- no')
+
+        }
+
+          if ($i -like 'variable "ebs_srv_volume_size" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebssrvsizedefault = $tv.value[$index+2]
+           $ebssrvsize = $ebssrvsizedefault.Trim('default =').trim('"')
+        }
+
+          if ($i -like 'variable "ebs_var_volume_size" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebsvarsizedefault = $tv.value[$index+2]
+           $ebsvarsize = $ebsvarsizedefault.Trim('default =').trim('"')
+        }
+
+           if ($i -like 'variable "ebs_var_volume_type" {')
+        {
+           $index = $tv.value.IndexOf($i)
+           $ebsvarvoldefault = $tv.value[$index-1]
+           $ebsvarvol = $ebsvarvoldefault.trim('##').trim('vol <- no')
+
+        }
+
+}
+
+$string = "| $role | $volume | $volumesize | $ebsvol | $ebssize | $ebssrvvol | $ebssrvsize | $ebsvarvol | $ebsvarsize "
+write-output $string
+}
